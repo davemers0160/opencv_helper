@@ -25,7 +25,7 @@
 extern "C" {
 #endif
     // This function takes in a 16-bit single channel image and converts it to an 8-bit single channel image
-    IMG_DLL_API void convert_ushort_to_uchar(unsigned short *src, unsigned int width, unsigned short height, unsigned char *dst);
+    IMG_DLL_API void convert_ushort_to_uchar(unsigned short *src, unsigned int width, unsigned int height, unsigned char *dst);
 #ifdef __cplusplus
 }
 #endif
@@ -35,7 +35,7 @@ extern "C" {
 extern "C" {
 #endif
     // This function takes in a 16-bit single channel image and converts it to an 8-bit single channel image
-    IMG_DLL_API void convert_float_to_uchar(float* src, unsigned int width, unsigned short height, unsigned char* dst);
+    IMG_DLL_API void convert_float_to_uchar(float* src, unsigned int width, unsigned int height, unsigned char* dst);
 #ifdef __cplusplus
 }
 #endif
@@ -45,7 +45,7 @@ extern "C" {
 extern "C" {
 #endif
     // This function takes in a 16-bit single channel image and converts it to an 8-bit single channel image
-    IMG_DLL_API void convert_double_to_uchar(double* src, unsigned int width, unsigned short height, unsigned char* dst);
+    IMG_DLL_API void convert_double_to_uchar(double* src, unsigned int width, unsigned int height, unsigned char* dst);
 #ifdef __cplusplus
 }
 #endif

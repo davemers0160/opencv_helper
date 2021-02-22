@@ -17,7 +17,7 @@
 
 
 //----------------------------------------------------------------------------------
-void convert_ushort_to_uchar(unsigned short *src, unsigned int w, unsigned short h, unsigned char *dst)
+void convert_ushort_to_uchar(unsigned short *src, unsigned int w, unsigned int h, unsigned char *dst)
 {
 
     cv::Mat img1 = cv::Mat(h, w, CV_16UC1, src, w * sizeof(*src));
@@ -28,7 +28,7 @@ void convert_ushort_to_uchar(unsigned short *src, unsigned int w, unsigned short
 }   // end of convert_ushort_to_uchar
 
 //----------------------------------------------------------------------------------
-void convert_float_to_uchar(float* src, unsigned int w, unsigned short h, unsigned char* dst)
+void convert_float_to_uchar(float* src, unsigned int w, unsigned int h, unsigned char* dst)
 {
 
     cv::Mat img1 = cv::Mat(h, w, CV_32FC1, src, w * sizeof(*src));
@@ -39,7 +39,7 @@ void convert_float_to_uchar(float* src, unsigned int w, unsigned short h, unsign
 }   // end of convert_float_to_uchar
 
 //----------------------------------------------------------------------------------
-void convert_double_to_uchar(double* src, unsigned int w, unsigned short h, unsigned char* dst)
+void convert_double_to_uchar(double* src, unsigned int w, unsigned int h, unsigned char* dst)
 {
 
     cv::Mat img1 = cv::Mat(h, w, CV_64FC1, src, w * sizeof(*src));
