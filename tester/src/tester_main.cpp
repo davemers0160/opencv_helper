@@ -59,12 +59,34 @@ int main(int argc, char** argv)
 
         if (test_lib == NULL)
         {
-            throw std::runtime_error("error loading library");
+            throw std::runtime_error("error loading library: " + lib_filename);
         }
      
         convert_ushort_to_uchar cv_16UC1_8UC1 = (convert_ushort_to_uchar)GetProcAddress(test_lib, "convert_ushort_to_uchar");
         convert_float_to_uchar cv_32FC1_8UC1 = (convert_float_to_uchar)GetProcAddress(test_lib, "convert_float_to_uchar");
         convert_double_to_uchar cv_64FC1_8UC1 = (convert_double_to_uchar)GetProcAddress(test_lib, "convert_double_to_uchar");
+
+        lib_filename = "../../img_show_lib/build/Release/img_show.dll";
+        HINSTANCE lib_img_show = LoadLibrary(lib_filename.c_str());
+
+        if (lib_img_show == NULL)
+        {
+            throw std::runtime_error("error loading library: " + lib_filename);
+        }
+
+        imshow_gray img_show_gray = (imshow_gray)GetProcAddress(lib_img_show, "imshow_gray");
+        imshow_rgb img_show_rgb = (imshow_rgb)GetProcAddress(lib_img_show, "imshow_rgb");
+        close_win close_window = (close_win)GetProcAddress(lib_img_show, "close_window");
+
+        lib_filename = "../../select_roi_lib/build/Release/select_roi.dll";
+        HINSTANCE lib_select_roi = LoadLibrary(lib_filename.c_str());
+
+        if (lib_select_roi == NULL)
+        {
+            throw std::runtime_error("error loading library: " + lib_filename);
+        }
+
+        select_roi cv_select_roi = (select_roi)GetProcAddress(lib_select_roi, "select_roi");
 
 #else
         void* test_lib = dlopen(lib_filename.c_str(), RTLD_NOW);
@@ -74,7 +96,19 @@ int main(int argc, char** argv)
             throw std::runtime_error("error loading library");
         }
 
-        convert16to8 cv16_8UC1 = (convert16to8)dlsym(test_lib, "convert16to8");
+        convert_ushort_to_uchar cv_16UC1_8UC1 = (convert_ushort_to_uchar)dlsym(test_lib, "convert_ushort_to_uchar");
+        convert_float_to_uchar cv_32FC1_8UC1 = (convert_float_to_uchar)dlsym(test_lib, "convert_float_to_uchar");
+        convert_double_to_uchar cv_64FC1_8UC1 = (convert_double_to_uchar)dlsym(test_lib, "convert_double_to_uchar");
+
+        lib_filename = "../../img_show_lib/build/Release/img_show.dll";
+        void* lib_img_show = LoadLibrary(lib_filename.c_str());
+
+        if (lib_img_show == NULL)
+        {
+            throw std::runtime_error("error loading library");
+        }
+
+        img_show cv_img_show = (img_show)GetProcAddress(lib_img_show, "img_show");
 
 #endif
 
@@ -100,40 +134,67 @@ int main(int argc, char** argv)
 
         img2 = cv::Mat(h, w, CV_8UC1, img_data_16, w*sizeof(*img_data_16));
 
-        cv::imshow("Test Image 16", img2);
-        cv::waitKey(0);
+        int rx = 0;
+        int ry = 0;
+        int rw = 0;
+        int rh = 0;
+
+        cv_select_roi(img2.ptr<uint8_t>(0), w, h, 1, &rx, &ry, &rw, &rh);
+
+        //img_show_gray("Test Image 16", img2.ptr<uint8_t>(0), w, h, 0);
+
+        //close_window("Test Image 16");
+
+        //cv::imshow("Test Image 16", img2);
+        //cv::waitKey(0);
 
         // ----------------------------------------------------------------------------
         cv_32FC1_8UC1(img32.ptr<float>(0), w, h, img_data_32);
 
         cv::Mat img3 = cv::Mat(h, w, CV_8UC1, img_data_32, w * sizeof(*img_data_32));
 
-        cv::imshow("Test Image 32", img3);
-        cv::waitKey(0);
+        //cv::namedWindow("Test Image 32", cv::WindowFlags::WINDOW_NORMAL | cv::WindowFlags::WINDOW_FREERATIO);
+        //cv::imshow("Test Image 32", img3);
+        //cv::waitKey(0);
+        img_show_gray("Test Image 32", img2.ptr<uint8_t>(0), w, h, 0);
 
         // ----------------------------------------------------------------------------
         cv_64FC1_8UC1(img64.ptr<double>(0), w, h, img_data_64);
 
         cv::Mat img4 = cv::Mat(h, w, CV_8UC1, img_data_64, w * sizeof(*img_data_64));
 
-        cv::imshow("Test Image 64", img4);
-        cv::waitKey(0);
+        //cv::imshow("Test Image 64", img4);
+        //cv::waitKey(0);
+        img_show_gray("Test Image 64", img2.ptr<uint8_t>(0), w, h, 0);
 
+        // ----------------------------------------------------------------------------
+        cv::Mat img5;
 
+        cv::cvtColor(img4, img5, cv::COLOR_GRAY2BGR);
+
+        img_show_rgb("Test Image rgb", img5.ptr<uint8_t>(0), w, h, 0);
+
+        //close_window("Test Image rgb");
 
 // ----------------------------------------------------------------------------
 // Close the library
 // ----------------------------------------------------------------------------
 #if defined(_WIN32) | defined(__WIN32__) | defined(__WIN32) | defined(_WIN64) | defined(__WIN64)
         FreeLibrary(test_lib);
+        FreeLibrary(lib_img_show);
+        FreeLibrary(lib_select_roi);
 #else
         dlclose(test_lib);
+        dlclose(lib_img_show);
+        FreeLibrary(lib_select_roi);
+        dlclose(lib_select_roi);
 #endif
 
         delete[] img_data_16;
         delete[] img_data_32;
         delete[] img_data_64;
 
+        cv::destroyAllWindows();
         
     }
     catch (std::exception& e)
@@ -144,7 +205,6 @@ int main(int argc, char** argv)
         std::cin.ignore();
     }
 
-    cv::destroyAllWindows();
 
     std::cout << std::endl << "End of Program.  Press Enter to close..." << std::endl;
     std::cin.ignore();
