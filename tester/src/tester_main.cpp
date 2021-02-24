@@ -11,11 +11,7 @@
 #include <iostream>
 #include <iomanip>
 #include <string>
-
-// OpenCV includes
-#include <opencv2/core.hpp>
-#include <opencv2/highgui.hpp>
-#include <opencv2/imgproc.hpp>
+#include <vector>
 
 // Custom includes
 #include "tester.h"
@@ -32,12 +28,17 @@ void print_usage(void)
 int main(int argc, char** argv)
 {
 
+    uint32_t r, c;
+
     std::string lib_filename;
     std::string image_filename;
 
-    int32_t w, h;
-    cv::Mat img1;
-    cv::Mat img2;
+    int32_t w = 256;
+    int32_t h = 256;
+
+    std::vector<uint8_t> img08(w*h);
+    std::vector<uint16_t> img16(w*h);
+    std::vector<float> img32(w * h);
 
     // ----------------------------------------------------------------------------------------
     if (argc == 1)
@@ -112,17 +113,30 @@ int main(int argc, char** argv)
 
 #endif
 
-        image_filename = "../images/image_0547_16.png";
+        //image_filename = "../images/image_0547_16.png";
 
-        img1 = cv::imread(image_filename, cv::IMREAD_ANYCOLOR | cv::IMREAD_ANYDEPTH);
+        //img1 = cv::imread(image_filename, cv::IMREAD_ANYCOLOR | cv::IMREAD_ANYDEPTH);
 
-        h = img1.rows;
-        w = img1.cols;
+        // fill in the values of the matrix
+        uint16_t v16 = 0;
+        uint8_t v8 = 0;
+        for (r = 0; r < h; ++r)
+        {
+            for (c = 0; c < w; ++c)
+            {
+                img08[r * w + c] = v8;
+                img16[r * w + c] = v16;
+                img32[r * w + c] = v16 * 32;
+                ++v16;
+                ++v8;
+            }
+        }
 
-        cv::Mat img32, img64;
 
-        img1.convertTo(img32, CV_32FC1, 9.87, 300.5);
-        img1.convertTo(img64, CV_64FC1, 1312.4, -650.0);
+        //cv::Mat img32, img64;
+
+        //img1.convertTo(img32, CV_32FC1, 9.87, 300.5);
+        //img1.convertTo(img64, CV_64FC1, 1312.4, -650.0);
 
         uint8_t* img_data_16 = new uint8_t[h * w]{ 0 };
         uint8_t* img_data_32 = new uint8_t[h * w]{ 0 };
@@ -130,16 +144,18 @@ int main(int argc, char** argv)
 
         // convert the image
         //conv16to8(img1.ptr<uint16_t>(0), w, h, img_data_16);
-        cv_16UC1_8UC1(img1.ptr<uint16_t>(0), w, h, img_data_16);
+        cv_16UC1_8UC1(img16.data(), w, h, img_data_16);
+        img_show_gray("Test Image 16", img_data_16, w, h, 0);
 
-        img2 = cv::Mat(h, w, CV_8UC1, img_data_16, w*sizeof(*img_data_16));
+
+        //img2 = cv::Mat(h, w, CV_8UC1, img_data_16, w*sizeof(*img_data_16));
 
         int rx = 0;
         int ry = 0;
         int rw = 0;
         int rh = 0;
 
-        cv_select_roi(img2.ptr<uint8_t>(0), w, h, 1, &rx, &ry, &rw, &rh);
+        cv_select_roi(img08.data(), w, h, 1, &rx, &ry, &rw, &rh);
 
         //img_show_gray("Test Image 16", img2.ptr<uint8_t>(0), w, h, 0);
 
@@ -149,30 +165,30 @@ int main(int argc, char** argv)
         //cv::waitKey(0);
 
         // ----------------------------------------------------------------------------
-        cv_32FC1_8UC1(img32.ptr<float>(0), w, h, img_data_32);
+        cv_32FC1_8UC1(img32.data(), w, h, img_data_32);
 
-        cv::Mat img3 = cv::Mat(h, w, CV_8UC1, img_data_32, w * sizeof(*img_data_32));
+        //cv::Mat img3 = cv::Mat(h, w, CV_8UC1, img_data_32, w * sizeof(*img_data_32));
 
         //cv::namedWindow("Test Image 32", cv::WindowFlags::WINDOW_NORMAL | cv::WindowFlags::WINDOW_FREERATIO);
         //cv::imshow("Test Image 32", img3);
         //cv::waitKey(0);
-        img_show_gray("Test Image 32", img2.ptr<uint8_t>(0), w, h, 0);
+        img_show_gray("Test Image 32", img_data_32, w, h, 0);
 
         // ----------------------------------------------------------------------------
-        cv_64FC1_8UC1(img64.ptr<double>(0), w, h, img_data_64);
+        //cv_64FC1_8UC1(img64.ptr<double>(0), w, h, img_data_64);
 
-        cv::Mat img4 = cv::Mat(h, w, CV_8UC1, img_data_64, w * sizeof(*img_data_64));
+        //cv::Mat img4 = cv::Mat(h, w, CV_8UC1, img_data_64, w * sizeof(*img_data_64));
 
         //cv::imshow("Test Image 64", img4);
         //cv::waitKey(0);
-        img_show_gray("Test Image 64", img2.ptr<uint8_t>(0), w, h, 0);
+        //img_show_gray("Test Image 64", img2.ptr<uint8_t>(0), w, h, 0);
 
         // ----------------------------------------------------------------------------
-        cv::Mat img5;
+        //cv::Mat img5;
 
-        cv::cvtColor(img4, img5, cv::COLOR_GRAY2BGR);
+        //cv::cvtColor(img4, img5, cv::COLOR_GRAY2BGR);
 
-        img_show_rgb("Test Image rgb", img5.ptr<uint8_t>(0), w, h, 0);
+        //img_show_rgb("Test Image rgb", img5.ptr<uint8_t>(0), w, h, 0);
 
         //close_window("Test Image rgb");
 
@@ -194,7 +210,7 @@ int main(int argc, char** argv)
         delete[] img_data_32;
         delete[] img_data_64;
 
-        cv::destroyAllWindows();
+        //cv::destroyAllWindows();
         
     }
     catch (std::exception& e)
