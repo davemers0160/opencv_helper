@@ -13,9 +13,23 @@
 #include <string>
 #include <vector>
 
+// OpenCV includes
+#include <opencv2/core.hpp>
+#include <opencv2/highgui.hpp>
+#include <opencv2/imgproc.hpp>
+
 // Custom includes
 #include "tester.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+    // This function 
+    void crop_uint8_img(unsigned char* src, unsigned int width, unsigned int height, unsigned int x, unsigned int y, unsigned int w, unsigned int h, unsigned char* dst);
+
+#ifdef __cplusplus
+}
+#endif
 // ----------------------------------------------------------------------------
 void print_usage(void)
 {
@@ -142,10 +156,20 @@ int main(int argc, char** argv)
         uint8_t* img_data_32 = new uint8_t[h * w]{ 0 };
         uint8_t* img_data_64 = new uint8_t[h * w]{ 0 };
 
+        uint8_t* crop_8 = new uint8_t[100 * 100]{ 0 };
+
         // convert the image
         //conv16to8(img1.ptr<uint16_t>(0), w, h, img_data_16);
         cv_16UC1_8UC1(img16.data(), w, h, img_data_16);
         img_show_gray("Test Image 16", img_data_16, w, h, 0);
+
+        //cv::Rect roi(100, 100, 100, 100);
+        //cv::Mat img1 = cv::Mat(h, w, CV_8UC1, img_data_16, w * sizeof(*img_data_16));
+        //cv::Mat img2 = img1(roi);
+
+        //std::memcpy(crop_8, img2.data, 100 * 100 * sizeof(*crop_8));
+
+        crop_uint8_img(img_data_16, w, h, 100, 100, 100, 100, crop_8);
 
 
         //img2 = cv::Mat(h, w, CV_8UC1, img_data_16, w*sizeof(*img_data_16));
