@@ -16,8 +16,9 @@
 // library internal state variables:
 
 //----------------------------------------------------------------------------------
-void select_roi(
-    unsigned char* src, unsigned int w, unsigned int h, unsigned int c,
+void select_roi(char* win_name,
+    unsigned char* src, 
+    unsigned int w, unsigned int h, unsigned int c,
     int *rx, int *ry, int *rw, int *rh)
 {
     cv::Mat img;
@@ -32,8 +33,10 @@ void select_roi(
         break;
     }
     
-    cv::Rect roi = cv::selectROI("Select ROI", img);
-    cv::destroyWindow("Select ROI");
+    cv::Mat img2 = img.clone();
+
+    cv::Rect roi = cv::selectROI(std::string(win_name), img2);
+    //cv::destroyWindow(std::string(win_name));
     
     *rx = roi.x;
     *ry = roi.y;

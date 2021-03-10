@@ -20,7 +20,7 @@
 extern "C" {
 #endif
     // This function takes in an 8-bit 1- or 3-channel image and displays it
-    SELECT_ROI_LIB void select_roi(unsigned char* src, unsigned int w, unsigned int h, unsigned int c, int *rx, int *ry, int *rw, int *rh);
+    SELECT_ROI_LIB void select_roi(char* win_name, unsigned char* src, unsigned int w, unsigned int h, unsigned int c, int *rx, int *ry, int *rw, int *rh);
 #ifdef __cplusplus
 }
 #endif
