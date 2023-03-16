@@ -77,7 +77,9 @@ void select_roi(
 
     mouse_params mp;
 
-    cv::namedWindow(win_name, cv::WINDOW_NORMAL);
+    cv::namedWindow(win_name, cv::WINDOW_NORMAL | cv::WINDOW_KEEPRATIO);
+
+    cv::resizeWindow(win_name, 2 * w, 2 * h);
 
     cv::setMouseCallback(win_name, mouse_click, (void*)&mp);
 
@@ -86,7 +88,7 @@ void select_roi(
     // end selection process on SPACE (32) ESC (27) or ENTER (13)
     while (!(key == 32 || key == 27 || key == 13))
     {
-        cv::rectangle(img2, mp.roi, cv::Scalar(255, 0, 0), 2, 1);
+        cv::rectangle(img2, mp.roi, cv::Scalar(255, 0, 0), 1, 1);
 
         cv::imshow(win_name, img2);
 
