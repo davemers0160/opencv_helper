@@ -79,8 +79,6 @@ void select_roi(
 
     cv::namedWindow(win_name, cv::WINDOW_NORMAL | cv::WINDOW_KEEPRATIO);
 
-    cv::resizeWindow(win_name, 2 * w, 2 * h);
-
     cv::setMouseCallback(win_name, mouse_click, (void*)&mp);
 
     char key = 0;
