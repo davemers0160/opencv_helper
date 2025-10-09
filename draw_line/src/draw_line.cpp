@@ -105,6 +105,9 @@ void draw_line_callback(int event, int x, int y, int flags, void* userdata)
 
 int main() 
 {
+    original_image = cv::Mat::zeros(2000, 2000, CV_8UC3); // Create a black image WINDOW_GUI_EXPANDED WINDOW_GUI_NORMAL
+    cv::namedWindow("Image Window", cv::WINDOW_NORMAL | cv::WINDOW_GUI_NORMAL);
+    //cv::setMouseCallback("Image Window", draw_line_callback);
 
     line_struct ls;
     ls.original_image = cv::Mat::zeros(500, 500, CV_8UC3); // Create a black image
